@@ -91,7 +91,8 @@ export class SessionUrlProvider {
     if (
       !hostUri &&
       (ExecutionEnvironment.StoreClient === Constants.executionEnvironment ||
-        Linking.resolveScheme({}))
+        // needs to be silent to prevent logging warnings
+        Linking.resolveScheme({ isSilent: true }))
     ) {
       if (!Constants.linkingUri) {
         hostUri = '';
