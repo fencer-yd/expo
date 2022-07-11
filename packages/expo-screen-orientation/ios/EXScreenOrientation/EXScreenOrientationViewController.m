@@ -6,6 +6,10 @@
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #import <EXScreenOrientation/NSString+UIInterfaceOrientationMask.h>
 
+#if DEBUG
+#import "EXScreenOrientationUtilities.h"
+#endif
+
 NSString *const EXDefaultScreenOrientationMask = @"EXDefaultScreenOrientationMask";
 
 // copy of RNScreens protocol
@@ -61,7 +65,10 @@ NSString *const EXDefaultScreenOrientationMask = @"EXDefaultScreenOrientationMas
   if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
     return [screenOrientationRegistry requiredOrientationMask];
   }
-  
+  #if DEBUG
+    return UIInterfaceOrientationMaskAll;
+  #endif
+
   return _defaultOrientationMask;
 }
 
