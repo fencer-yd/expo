@@ -15,6 +15,14 @@
 @property (nonatomic, assign) UIInterfaceOrientationMask lastOrientationMask;
 
 @end
+#if DEBUG
+void __swap(CGFloat *p, CGFloat *q) {
+  if (p == NULL || q == NULL) return;
+  CGFloat tmp = *p;
+  *p = *q;
+  *q = tmp;
+}
+#endif
 
 @implementation EXScreenOrientationRegistry
 
@@ -227,6 +235,37 @@ EX_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
   for (id module in [_notificationListeners allObjects]) {
     [module screenOrientationDidChange:newScreenOrientation];
   }
+ 
+  #if DEBUG
+
+    // on iPad: try to force layout the root view when screen orientation changes.
+    UIWindow *window = [[[UIApplication sharedApplication] delegate] window];
+    UIView *rootView = [window rootViewController].view;
+
+    CGFloat width = window.frame.size.width;
+    CGFloat height = window.frame.size.height;
+
+    // default to portrait orientation
+    if (width > height) {
+      __swap(&width, &height);
+    }
+
+    if (newScreenOrientation == UIInterfaceOrientationLandscapeLeft ||
+        newScreenOrientation == UIInterfaceOrientationLandscapeRight
+    ) {
+      // manually switch to landscape orientation when changed.
+      __swap(&width, &height);
+    }
+
+    if (rootView.frame.size.width != width ||
+        rootView.frame.size.height != height
+    ) {
+      rootView.frame = CGRectMake(0, 0, width, height);
+      NSLog(@"HACK!!! Updated RCTRootView::frame to %@", NSStringFromCGRect(rootView.frame));
+    }
+
+    [rootView layoutIfNeeded];
+  #endif
 }
 
 #pragma mark - lifecycle
