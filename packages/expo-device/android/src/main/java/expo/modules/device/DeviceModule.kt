@@ -55,10 +55,7 @@ class DeviceModule : Module() {
         "osInternalBuildId" to Build.ID,
         "osBuildFingerprint" to Build.FINGERPRINT,
         "platformApiLevel" to Build.VERSION.SDK_INT,
-        "deviceName" to if (Build.VERSION.SDK_INT <= 31)
-          Settings.Secure.getString(context.contentResolver, "bluetooth_name")
-        else
-          Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME)
+        "deviceName" to ""
       )
     }
 
